@@ -5,10 +5,12 @@ const mongoose = require('mongoose')
 const config = require('./config/config')[env];
 const app = require('express')();
 const indexRouter = require('./routes')
+const authRouter = require('./routes/auth')
+const cubeRouter = require('./routes/cube')
 const cubeModel = require('./models/cubemodel')
 
-//const dbPath = config.databaseUrl;
-const dbPath ='mongodb://localhost:27017/cubicle';
+const dbPath = config.databaseUrl;
+//const dbPath ='mongodb://localhost:27017/cubicle';
 
 
 mongoose.connect( dbPath  ,
@@ -26,7 +28,9 @@ mongoose.connect( dbPath  ,
 })
 
 require('./config/express')(app);
-app.use('/', indexRouter)
+app.use('/', indexRouter);
+app.use('/', authRouter);
+app.use('/', cubeRouter);
 
 
 app.get('*', (req, res) => {
