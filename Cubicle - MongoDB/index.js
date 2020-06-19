@@ -4,9 +4,14 @@ const mongoose = require('mongoose')
 
 const config = require('./config/config')[env];
 const app = require('express')();
+const indexRouter = require('./routes')
 const cubeModel = require('./models/cubemodel')
 
-mongoose.connect(config.databaseUrl ,
+//const dbPath = config.databaseUrl;
+const dbPath ='mongodb://localhost:27017/cubicle';
+
+
+mongoose.connect( dbPath  ,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -21,6 +26,14 @@ mongoose.connect(config.databaseUrl ,
 })
 
 require('./config/express')(app);
-require('./config/routes')(app);
+app.use('/', indexRouter)
+
+
+app.get('*', (req, res) => {
+    res.render('404', {
+        title: 'Error | Cube Workshop'
+    })
+})
+
 
 app.listen(config.port, console.log(`Listening on port ${config.port}! Now its up to you...`));

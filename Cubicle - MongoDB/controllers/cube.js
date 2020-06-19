@@ -1,46 +1,25 @@
-const cubeModels = require('../models/cubemodel');
+const Cube = require('../models/cubemodel');
 
-function index(req,res,next) {
-    cubeModels.getAll().then( cubes =>{
-        res.render('index.hbs',{cubes})
-    }).catch(next);
+const getAllCubes = async () =>{
+    const cubes = await Cube.find().lean();
+    return cubes
+};
+
+const getCube = async (id) => {
+    const cube = await Cube.findById(id).lean();
+    return cube;
 }
 
-function details(req,res,next) {
-    const id = +req.params.id
-    cubeModels.getCurent(id).then( cube =>{
-        res.render('details.hbs',{cube})
-    }).catch(next);
-}
-
-function about(req,res) {
-        res.render('about.hbs')
-}
-
-function error(req,res) {
-    res.render('404.hbs')
-}
-
-function getCreate(req,res) {
-
-    res.render('create.hbs')
-}
-
-function postCreate(req,res) {
-    const {name = null , description = null , imageUrl = null , difLevel = null } =  req.body;
-    //имената на променливите са същите както на полетата на формата и ги взимаме от бодито
-    const newCube = cubeModels.create(name,description,imageUrl,difLevel);
-    cubeModels.insert(newCube).then(() =>{
-        res.redirect('/');
+const updateCube = async(cubeId , accessoryId) =>{
+    await Cube.findByIdAndUpdate(cubeId,{
+        $addToSet: {
+            accessories :[accessoryId]
+        }
     })
 }
 
 module.exports={
-    index,
-    details,
-    error,
-    about,
-    getCreate,
-    postCreate
-
+    getAllCubes,
+    getCube,
+    updateCube
 }
