@@ -1,4 +1,4 @@
-const {DB_PASSWORD} =require('../dbPass')
+const {DB_PASSWORD} =require('../secretConfig')
 
 module.exports = {
     development: {
