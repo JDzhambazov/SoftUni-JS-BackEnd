@@ -7,7 +7,9 @@ const app = require('express')();
 const indexRouter = require('./routes')
 const authRouter = require('./routes/auth')
 const cubeRouter = require('./routes/cube')
-const cubeModel = require('./models/cubemodel')
+const cubeModel = require('./models/cubemodel');
+const {getUserStatus} = require('./controllers/user')
+
 
 const dbPath = config.databaseUrl;
 //const dbPath ='mongodb://localhost:27017/cubicle';
@@ -33,9 +35,10 @@ app.use('/', authRouter);
 app.use('/', cubeRouter);
 
 
-app.get('*', (req, res) => {
+app.get('*',getUserStatus, (req, res) => {
     res.render('404', {
-        title: 'Error | Cube Workshop'
+        title: 'Error | Cube Workshop',
+        isLoggedIn:req.isLoggedIn
     })
 })
 
