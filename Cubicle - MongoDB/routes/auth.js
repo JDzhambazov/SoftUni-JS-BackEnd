@@ -1,5 +1,5 @@
 const {Router} = require('express')
-const{saveUser , verifyUser ,guestAccess} = require('../controllers/user');
+const{saveUser , verifyUser ,guestAccess , getUserStatus} = require('../controllers/user');
 
 
 
@@ -15,13 +15,29 @@ router.post('/login',(req,res)=>{
     
 });
 
-router.get('/signup',guestAccess,(req,res)=>{
-    res.render('registerPage')
+router.get('/signup',guestAccess,getUserStatus,(req,res)=>{
+
+    const error = req.query.error ?'Username or Passwort is not valid':null;
+
+    res.render('registerPage',{
+        isLoggedIn:req.isLoggedIn,
+        error
+    })
 });
 
 router.post('/signup', async (req, res) => {
-    saveUser(req, res)
+    const {
+        password,
+        repeatPassword
+    } = req.body;
 
+    if (!password || password.lenght < 8 || !password.match(/^[A-Za-z0-9]+$/)) {
+        res.redirect('/signup?error=true')
+    } else if (password !== repeatPassword) {
+        res.redirect('/signup?error=true')
+    } else {
+        saveUser(req, res)
+    }
 });
 
 module.exports = router

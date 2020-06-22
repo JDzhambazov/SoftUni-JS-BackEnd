@@ -9,34 +9,37 @@ const generateToken = data => {
     return token
   }
 
-const saveUser =(req,res)=>{
-    const{
-        username,
-        password,
-        repeatPassword
-    } =req.body;
+const saveUser = (req, res) => {
+  const {
+    username,
+    password,
+  } = req.body;
 
-    if(password !== repeatPassword){
-        res.redirect('/signup')
-    } else{
-        bcrypt.genSalt(10,async (err,salt)=>{
-            const hashPass =await bcrypt.hash(password,salt)
-            const user = new User({
-                username , 
-                password:hashPass
-            })
-            const newUser = await user.save();
+  bcrypt.genSalt(10, async (err, salt) => {
+    const hashPass = await bcrypt.hash(password, salt)
+    const user = new User({
+      username,
+      password: hashPass
+    })
 
-            const token = jwt.sign({
-                userID: newUser._id,
-                usernamme: newUser.usernamme
-            }, privateKey);
-            
-            res.cookie('aid',token)
-            
-            res.redirect('/')
-        });
-    };
+    try {
+
+      const newUser = await user.save();
+      
+      const token = jwt.sign({
+        userID: newUser._id,
+        usernamme: newUser.usernamme
+      }, privateKey);
+  
+      res.cookie('aid', token)
+  
+      res.redirect('/')
+    } catch (err) {
+
+      res.redirect('/signup?error=true')
+    }
+
+  });
 };
 
 const verifyUser = async (req,res) => {

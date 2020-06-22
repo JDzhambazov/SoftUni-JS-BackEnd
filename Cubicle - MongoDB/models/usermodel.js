@@ -4,13 +4,13 @@ const UserSchema = new mongoose.Schema({
     username:{
         type:String,
         required:true,
-        min:2,
-        max:15
+        unique:true,
+        match:[/^[A-Za-z0-9]+$/,"User name is nod valid"],
+        minlength:5
     },
     password:{
         type:String,
         required:true,
-        min:6
     }
 });
 
