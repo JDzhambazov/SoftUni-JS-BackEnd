@@ -5,13 +5,28 @@ const{saveUser , verifyUser ,guestAccess , getUserStatus} = require('../controll
 
 const router = Router();
 
-router.get('/login',guestAccess,(req,res)=>{
-    res.render('loginPage')
+router.get('/login',guestAccess,getUserStatus,(req,res)=>{
+
+    const error = req.query.error;
+    console.log(error);
+
+    res.render('loginPage',{
+        isLoggedIn:req.isLoggedIn,
+        error
+    })
 });
 
 router.post('/login',(req,res)=>{
+    const {
+        password,
+    } = req.body;
 
-    verifyUser(req,res)
+    if (password.lenght < 8 ) {
+        res.redirect('/login?error=Passoword is not corect')
+    }else{
+       verifyUser(req,res)
+    }
+
     
 });
 
@@ -31,7 +46,7 @@ router.post('/signup', async (req, res) => {
         repeatPassword
     } = req.body;
 
-    if (!password || password.lenght < 8 || !password.match(/^[A-Za-z0-9]+$/)) {
+    if (password.lenght < 8 || !password.match(/^[A-Za-z0-9]+$/)) {
         res.redirect('/signup?error=true')
     } else if (password !== repeatPassword) {
         res.redirect('/signup?error=true')

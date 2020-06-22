@@ -49,23 +49,28 @@ const verifyUser = async (req,res) => {
     } =req.body;
 
     const user = await User.findOne({username})
-   
-    const status =await bcrypt.compare(password,user.password);
-    
-    if (status) {
-        const token = generateToken({ 
-          userID: user._id,
-          username: user.username
-        })
+
+    if (user !== null) {
+      const status =await bcrypt.compare(password,user.password);
+
+      if (status) {
+          const token = generateToken({ 
+            userID: user._id,
+            username: user.username
+          })
+        
+          res.cookie('aid',token)
+          res.redirect('/')
+        }else{
+            res.redirect('/login?error=Wrong password')
+        }
       
-        res.cookie('aid',token)
-        res.redirect('/')
-      }else{
-          res.redirect('/login')
-      }
-    
-    return status;
-}
+      return status;
+    }else{
+      res.redirect('/login?error=User is not exist')
+    }
+
+  }
 
 const authAccess = (req, res, next) => {
     const token = req.cookies['aid']
